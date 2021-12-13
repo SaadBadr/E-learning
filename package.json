@@ -6,7 +6,10 @@
 	"scripts": {
 		"start": "node server.js",
 		"develop": "nodemon server.js",
-		"debug": "ndb server.js"
+		"debug": "ndb server.js",
+		"lint": "eslint .  --ext .js",
+		"lint-fix": "eslint --fix .  --ext .js",
+		"format": "prettier-eslint --write \"{,!(node_modules)/**/}*.{js,jsx}\""
 	},
 	"repository": {
 		"type": "git",
@@ -19,9 +22,11 @@
 	},
 	"homepage": "https://github.com/SaadBadr/E-learning#readme",
 	"dependencies": {
+		"babel-eslint": "^10.1.0",
 		"bcrypt": "^5.0.1",
 		"compression": "^1.7.4",
 		"dotenv": "^8.2.0",
+		"eslint-plugin-prettier": "^4.0.0",
 		"express": "^4.17.1",
 		"express-fileupload": "^1.2.0",
 		"express-mongo-sanitize": "^2.0.0",
@@ -34,8 +39,18 @@
 		"nodemailer": "^6.7.2",
 		"passport": "^0.4.1",
 		"passport-jwt": "^4.0.0",
+		"prettier": "^2.5.1",
+		"prettier-eslint-cli": "^5.0.1",
 		"validator": "^13.7.0",
 		"winston": "^3.3.3",
 		"xss-clean": "^0.1.1"
+	},
+	"devDependencies": {
+		"eslint": "^7.32.0",
+		"eslint-config-prettier": "^8.3.0",
+		"eslint-config-standard": "^16.0.3",
+		"eslint-plugin-import": "^2.25.3",
+		"eslint-plugin-node": "^11.1.0",
+		"eslint-plugin-promise": "^5.2.0"
 	}
 }

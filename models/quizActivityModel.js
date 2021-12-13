@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
-const Activity = require("./activityModel");
+const mongoose = require("mongoose")
+const Activity = require("./activityModel")
 
 const quizActivitySchema = new mongoose.Schema({
   quiz: {
@@ -12,8 +12,8 @@ const quizActivitySchema = new mongoose.Schema({
     ],
     required: [true, "URL must be specified."],
   },
-});
+})
 
 // quizActivity is a discriminator of Activity, i.e. quizActivity inherits Activity schema
-const quizActivity = Activity.discriminator("QuizActivity", quizActivitySchema);
-module.exports = quizActivity;
+const quizActivity = Activity.discriminator("QuizActivity", quizActivitySchema)
+module.exports = quizActivity
