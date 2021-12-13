@@ -7,13 +7,8 @@ module.exports.courseCreate = catchAsync(async (req, res, next) => {
   const { syllabus, title } = req.body
   const instructor = req.user._id
 
-  let newCourse = new Course({ syllabus, title, instructor })
-  newCourse = await newCourse.save()
-
-  res.status(200).json({
-    status: "success",
-    course: newCourse,
-  })
+  req.body = { syllabus, title, instructor }
+  next()
 })
 
 module.exports.courseGet = catchAsync(async (req, res, next) => {
@@ -25,16 +20,30 @@ module.exports.courseGet = catchAsync(async (req, res, next) => {
     "-active -__v"
   )
 
+  if (!course) {
+    throw new AppError("Course not found!", 400)
+  }
+
   if (
     userType != "admin" &&
     course.instructor != userId &&
-    !user.enrolledCourses.includes(courseId)
+    !req.user.enrolledCourses.includes(courseId)
   ) {
     throw new AppError("You are not allowed to access this course", 401)
   }
 
+  if (req.user.enrolledCourses.includes(courseId)) {
+    course.activities.map((activity) => {
+      if (activity["__it"] == "QuizActivity") {
+        i = activity["students"].findIndex((x) => x == 4)
+        activity["students"] = activity["students"][i]
+        activity["grades"] = activity["grades"][i]
+      }
+      return activity
+    })
+  }
   res.status(200).json({
     status: "success",
-    course,
+    data: course,
   })
 })
