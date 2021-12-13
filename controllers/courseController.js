@@ -20,8 +20,10 @@ module.exports.courseGet = catchAsync(async (req, res, next) => {
   const courseId = req.params.id;
   const userId = req.user._id;
   const userType = req.user.type;
-  const course = await Course.findById(courseId);
-  console.log(course, courseId, userId, userType);
+  const course = await Course.findById(courseId).populate(
+    "activities",
+    "-active -__v"
+  );
 
   if (
     userType != "admin" &&
