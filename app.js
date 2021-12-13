@@ -9,6 +9,7 @@ const hpp = require("hpp")
 const passport = require("passport")
 const path = require("path")
 const compression = require("compression")
+const fileUpload = require("express-fileupload")
 
 // Controllers:-
 const errorController = require("./controllers/errorController")
@@ -68,6 +69,13 @@ app.use(passport.initialize()) // This line must be put if we are using sessions
 
 // Compress responses before sending it.
 app.use(compression())
+
+// Upload Files.
+app.use(
+  fileUpload({
+    limits: { fileSize: 50 * 1024 * 1024 },
+  })
+)
 
 app.use((req, res, next) => {
   if (process.env.NODE_ENV !== "production") {
