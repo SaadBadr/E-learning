@@ -53,9 +53,11 @@ module.exports.login = catchAsync(async (req, res, next) => {
   const publicUser = user.toPublic()
   res.status(200).json({
     status: "success",
-    token: tokenObject.token,
-    expiresIn: tokenObject.expires,
-    ...publicUser,
+    data: {
+      token: tokenObject.token,
+      expiresIn: tokenObject.expires,
+      ...publicUser,
+    },
   })
 })
 
@@ -83,9 +85,11 @@ module.exports.signup = catchAsync(async (req, res, next) => {
   const publicUser = newUser.toPublic()
   res.status(200).json({
     status: "success",
-    token: tokenObject.token,
-    expiresIn: tokenObject.expires,
-    ...publicUser,
+    data: {
+      token: tokenObject.token,
+      expiresIn: tokenObject.expires,
+      ...publicUser,
+    },
   })
 })
 
@@ -108,9 +112,11 @@ module.exports.adminSignup = catchAsync(async (req, res, next) => {
   const publicUser = newAdmin.toPublic()
   res.status(200).json({
     status: "success",
-    token: tokenObject.token,
-    expiresIn: tokenObject.expires,
-    ...publicUser,
+    data: {
+      token: tokenObject.token,
+      expiresIn: tokenObject.expires,
+      ...publicUser,
+    },
   })
 })
 
@@ -135,9 +141,11 @@ module.exports.adminChangePassword = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: "success",
-    token: tokenObject.token,
-    expiresIn: tokenObject.expires,
-    ...publicUser,
+    data: {
+      token: tokenObject.token,
+      expiresIn: tokenObject.expires,
+      ...publicUser,
+    },
   })
 })
 
@@ -152,7 +160,7 @@ module.exports.getAdmins = catchAsync(async (req, res, next) => {
   const admins = await User.find()
   res.status(200).json({
     status: "success",
-    admins,
+    data: { admins },
   })
 })
 
