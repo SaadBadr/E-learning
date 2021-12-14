@@ -1,7 +1,8 @@
 const mongoose = require("mongoose")
 
 // this schema is considered as the base schema for: videoActivity, quizActivity, pdfActivity
-const activitySchema = new mongoose.Schema(
+
+const qaQuestionSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -13,10 +14,15 @@ const activitySchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    course: {
+    author: {
       type: mongoose.Schema.ObjectId,
-      ref: "Course",
       required: true,
+      ref: "User",
+    },
+    replies: {
+      type: [mongoose.Schema.ObjectId],
+      required: true,
+      ref: "QAReply",
     },
     active: {
       // The activity is active --> not deleted
@@ -31,9 +37,5 @@ const activitySchema = new mongoose.Schema(
   }
 )
 
-activitySchema.virtual("type").get(function () {
-  return this["__t"]
-})
-
-const Activity = mongoose.model("Activity", activitySchema)
-module.exports = Activity
+const QAQuestion = mongoose.model("QAQuestion", qaQuestionSchema)
+module.exports = QAQuestion

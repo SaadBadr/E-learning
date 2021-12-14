@@ -33,6 +33,11 @@ const courseSchema = new mongoose.Schema(
       required: [true, "Instructor id must be specified."],
       ref: "User",
     },
+    qa: {
+      type: [mongoose.Schema.ObjectId],
+      ref: "QAQuestion",
+      default: [],
+    },
     active: {
       // The course is active --> not deleted
       type: Boolean,
@@ -45,11 +50,6 @@ const courseSchema = new mongoose.Schema(
   }
 )
 
-// adding id as virtual to be alias for _id
-courseSchema.virtual("id").get(function () {
-  return this._id
-})
-
 // adding activities as virtual ref to get the activities that reference the course with "parent ref."
 courseSchema.virtual("activities", {
   ref: "Activity",
@@ -58,7 +58,7 @@ courseSchema.virtual("activities", {
 })
 
 courseSchema.pre(/^find/, function () {
-  this.find({ active: true }).select("-active -__v")
+  this.find({ active: true }).select("-active")
 })
 
 const Course = mongoose.model("Course", courseSchema)

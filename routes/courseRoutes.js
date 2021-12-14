@@ -3,6 +3,8 @@ const authenticationController = require("../controllers/authenticationControlle
 const courseController = require("./../controllers/courseController")
 const factoryHandler = require("./../controllers/factoryHandler")
 const activityRoutes = require("./activityRoutes")
+const enrollRoutes = require("./enrollRoutes")
+const qaRoutes = require("./qaRoutes")
 const Course = require("../models/CourseModel")
 const router = express.Router()
 
@@ -31,5 +33,11 @@ router.use(
   authenticationController.protect(),
   activityRoutes
 )
+
+// nested routes for enroll
+router.use("/:id/enroll/", authenticationController.protect(), enrollRoutes)
+
+// nested routes for QA
+router.use("/:id/qa/", authenticationController.protect(), qaRoutes)
 
 module.exports = router

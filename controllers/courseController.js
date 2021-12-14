@@ -23,10 +23,12 @@ module.exports.courseGet = catchAsync(async (req, res, next) => {
   const courseId = req.params.id
   const userId = req.user._id
   const userType = req.user.type
-  const course = await Course.findById(courseId).populate(
-    "activities",
-    "-active -__v"
-  )
+  const course = await Course.findById(courseId)
+    .populate("activities", "-active")
+    .populate(
+      "instructor",
+      "id firstName lastName username birthDate email background"
+    )
 
   if (!course) {
     throw new AppError("Course not found!", 400)

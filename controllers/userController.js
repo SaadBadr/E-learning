@@ -16,5 +16,5 @@ module.exports.changeRole = catchAsync(async (req, res, next) => {
   updatedUser = updatedUser.toPublic()
   res
     .status(200)
-    .json({ status: "success", updatedUser, role: updatedUser.type })
+    .json({ status: "success", data: { updatedUser, role: updatedUser.type } })
 })

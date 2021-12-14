@@ -114,6 +114,8 @@ const userSchema = new mongoose.Schema(
   },
   {
     strict: "throw",
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   }
 )
 
