@@ -11,6 +11,14 @@ module.exports.courseCreate = catchAsync(async (req, res, next) => {
   next()
 })
 
+module.exports.getAllCourses = catchAsync(async (req, res, next) => {
+  const courses = await Course.find({})
+  res.status(200).json({
+    status: "success",
+    data: courses,
+  })
+})
+
 module.exports.courseGet = catchAsync(async (req, res, next) => {
   const courseId = req.params.id
   const userId = req.user._id
@@ -45,5 +53,29 @@ module.exports.courseGet = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: course,
+  })
+})
+
+module.exports.updateCourse = catchAsync(async (req, res, next) => {
+  const course = await Course.findById(req.params.id)
+
+  if (!course) throw new AppError("Course not found!", 404)
+  if (course.instructor != req.user.id)
+    throw new AppError("You are not authorized to update this course!", 401)
+
+  const { title, syllabus, active } = req.body
+
+  const updatedCourse = await Course.findByIdAndUpdate(
+    course._id,
+    { title, syllabus, active },
+    {
+      runValidators: true,
+      new: true,
+    }
+  )
+
+  res.status(200).json({
+    status: "success",
+    data: updatedCourse,
   })
 })

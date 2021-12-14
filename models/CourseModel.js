@@ -57,5 +57,9 @@ courseSchema.virtual("activities", {
   localField: "_id",
 })
 
+courseSchema.pre(/^find/, function () {
+  this.find({ active: true }).select("-active -__v")
+})
+
 const Course = mongoose.model("Course", courseSchema)
 module.exports = Course

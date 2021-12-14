@@ -14,10 +14,16 @@ router
     courseController.courseCreate,
     factoryHandler.createOneFactory(Course)
   )
+  .get(courseController.getAllCourses)
 
 router
   .route("/:id")
   .get(authenticationController.protect(), courseController.courseGet)
+  .patch(
+    authenticationController.protect(),
+    authenticationController.restrictTo("admin", "instructor"),
+    courseController.updateCourse
+  )
 
 // nested routes for activities
 router.use(
