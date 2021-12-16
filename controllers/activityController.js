@@ -33,10 +33,7 @@ module.exports.submitQuiz = catchAsync(async (req, res, next) => {
   const quiz = await QuizActivity.findById(req.params.id)
   if (!quiz) throw new AppError("Quiz not found!", 404)
 
-  if (
-    !req.user.enrolledCourses.includes(quiz.course) ||
-    quiz.students.includes(req.user.id)
-  )
+  if (!req.user.enrolledCourses.includes(quiz.course))
     throw new AppError("You are not allowed to take this quiz", 401)
 
   const { answers } = req.body
@@ -49,8 +46,11 @@ module.exports.submitQuiz = catchAsync(async (req, res, next) => {
     if (answers[i] == quiz.answers[i]) grade++
 
   grade = (grade / answers.length) * 100
-  quiz.students.push(req.user.id)
-  quiz.grades.push(grade)
+  prev_solution = quiz.grades.find((x) => x.student == req.user.id)
+  if (prev_solution)
+    prev_solution.grade =
+      grade > prev_solution.grade ? grade : prev_solution.grade
+  else quiz.grades.push({ student: req.user.id, grade: grade })
 
   await quiz.save()
 

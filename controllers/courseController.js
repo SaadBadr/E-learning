@@ -23,17 +23,18 @@ module.exports.courseGet = catchAsync(async (req, res, next) => {
   const courseId = req.params.id
   const userId = req.user._id.toString()
   const userType = req.user.type
-  const course = await Course.findById(courseId)
+  const data = await Course.findById(courseId)
     .populate("activities", "-active")
     .populate(
       "instructor",
       "id firstName lastName username birthDate email background"
     )
 
+  const course = data.toJSON()
+
   if (!course) {
     throw new AppError("Course not found!", 400)
   }
-
   if (
     userType != "admin" &&
     course.instructor.id != userId &&
@@ -41,17 +42,14 @@ module.exports.courseGet = catchAsync(async (req, res, next) => {
   ) {
     throw new AppError("You are not allowed to access this course", 401)
   }
-  console.log(userId)
   if (req.user.enrolledCourses.includes(courseId)) {
     course.activities = course.activities.map((activity) => {
       if (activity.type == "QuizActivity") {
-        i = activity["students"].findIndex((x) => x == userId)
-        if (i >= 0) {
-          activity["students"] = activity["students"][i]
-          activity["grades"] = activity["grades"][i]
-          console.log(userId)
-          console.log(activity["students"])
-        }
+        activity.grades = activity.grades.filter(
+          (grade) => grade.student == userId
+        )
+        delete activity.answers
+        console.log(activity)
       }
       return activity
     })

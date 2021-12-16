@@ -16,8 +16,7 @@ const quizActivitySchema = new mongoose.Schema({
     required: [true, "Answers must be specified."],
     min: 0,
   },
-  students: [mongoose.Schema.ObjectId],
-  grades: [Number],
+  grades: [{ student: mongoose.Schema.ObjectId, grade: Number }],
 })
 
 // quizActivity is a discriminator of Activity, i.e. quizActivity inherits Activity schema
