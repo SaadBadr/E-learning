@@ -37,8 +37,6 @@ module.exports.getCourse = catchAsync(async (req, res, next) => {
   next()
 })
 
-module.exports.deleteCourse = catchAsync(async (req, res, next) => {})
-
 // only instructor of the course => ["instructor"]
 // instructor of the course and the admin ["instructor", "admin"]
 // only students of the course ["learner"]

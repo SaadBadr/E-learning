@@ -32,7 +32,7 @@ router
     courseController.courseRouteRestrictTo("admin", "instructor"),
     handlerFactory.updateOne(Course)
   )
-  .delete(courseController.deleteCourse, handlerFactory.deleteOne(Course))
+  .delete(handlerFactory.deleteOne(Course))
 
 // nested routes for activities
 router.use(

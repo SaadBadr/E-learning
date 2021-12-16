@@ -1,5 +1,7 @@
 const mongoose = require("mongoose")
 const Activity = require("./activityModel")
+const fs = require("fs")
+const { promisify } = require("util")
 
 const pdfActivitySchema = new mongoose.Schema({
   url: {
@@ -7,6 +9,31 @@ const pdfActivitySchema = new mongoose.Schema({
     required: [true, "URL must be specified."],
     trim: true,
   },
+})
+
+pdfActivitySchema.pre("deleteOne", { document: true }, async function (next) {
+  try {
+    await promisify(fs.unlink)(`.${this.url}`)
+  } catch (error) {
+    next(error)
+  }
+})
+
+pdfActivitySchema.pre("deleteMany", async function (next) {
+  try {
+    let deletedData = await pdfActivity.find(this._conditions).lean()
+    console.log(deletedData)
+    if (deletedData) {
+      promises = []
+      deletedData.forEach((doc) =>
+        promises.push(promisify(fs.unlink)(`.${doc.url}`))
+      )
+      Promise.all(promises)
+    }
+    return next() // normal save
+  } catch (error) {
+    return next(error)
+  }
 })
 
 // pdfActivity is a discriminator of Activity, i.e. pdfActivity inherits Activity schema

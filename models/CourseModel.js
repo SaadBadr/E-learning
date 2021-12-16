@@ -1,4 +1,8 @@
 const mongoose = require("mongoose")
+const Activity = require("./activityModel")
+const User = require("./UserModel")
+const fs = require("fs")
+const { promisify } = require("util")
 
 const courseSchema = new mongoose.Schema(
   {
@@ -72,9 +76,26 @@ courseSchema.set("toJSON", {
   },
 })
 
-// courseSchema.pre(/^find/, function () {
-//   this.find({ active: true }).select("-active")
-// })
+courseSchema.pre("deleteOne", { document: true }, async function (next) {
+  promises = []
+  promises.push(
+    promisify(fs.rm)(`./public/uploads/pdf/${this._id}`, {
+      recursive: true,
+      force: true,
+    })
+  )
+  promises.push(Activity.deleteMany({ course: this._id }).exec())
+  promises.push(
+    User.updateMany({}, { $pull: { enrolledCourses: this._id } }).exec()
+  )
+
+  try {
+    await Promise.all(promises)
+  } catch (error) {
+    return next(error)
+  }
+  next()
+})
 
 const Course = mongoose.model("Course", courseSchema)
 module.exports = Course

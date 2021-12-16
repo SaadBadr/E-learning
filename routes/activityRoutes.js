@@ -25,7 +25,6 @@ router
   )
   .delete(
     courseController.courseRouteRestrictTo("instructor"),
-    activityController.deletePdf,
     handlerFactory.deleteOne(PdfActivity)
   )
 

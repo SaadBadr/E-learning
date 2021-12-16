@@ -2,10 +2,10 @@ const catchAsync = require("../utils/catchAsync")
 const AppError = require("../utils/appError")
 const DbQueryManager = require("../utils/dbQueryManager")
 const Course = require("../models/CourseModel")
-const { promisify } = require("util")
 const path = require("path")
 const QuizActivity = require("../models/quizActivityModel")
 const fs = require("fs")
+const { promisify } = require("util")
 
 module.exports.createActivity = catchAsync(async (req, res, next) => {
   req.body.course = req.params.id
@@ -47,12 +47,6 @@ module.exports.updatePdf = catchAsync(async (req, res, next) => {
   await promisify(file.mv)(`.${url}`)
   req.body.url = url
 
-  const activity = await PdfActivity.findById(req.params.pid)
-  await promisify(fs.unlink)(`.${activity.url}`)
-  next()
-})
-
-module.exports.deletePdf = catchAsync(async (req, res, next) => {
   const activity = await PdfActivity.findById(req.params.pid)
   await promisify(fs.unlink)(`.${activity.url}`)
   next()
