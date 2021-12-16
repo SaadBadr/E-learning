@@ -37,5 +37,9 @@ const qaQuestionSchema = new mongoose.Schema(
   }
 )
 
+qaQuestionSchema.pre(/^find/, function () {
+  this.find({ active: true }).select("-active")
+})
+
 const QAQuestion = mongoose.model("QAQuestion", qaQuestionSchema)
 module.exports = QAQuestion

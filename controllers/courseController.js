@@ -15,13 +15,13 @@ module.exports.getAllCourses = catchAsync(async (req, res, next) => {
   const courses = await Course.find({})
   res.status(200).json({
     status: "success",
-    data: courses,
+    data: { courses: courses },
   })
 })
 
 module.exports.courseGet = catchAsync(async (req, res, next) => {
   const courseId = req.params.id
-  const userId = req.user._id
+  const userId = req.user._id.toString()
   const userType = req.user.type
   const course = await Course.findById(courseId)
     .populate("activities", "-active")
@@ -36,25 +36,29 @@ module.exports.courseGet = catchAsync(async (req, res, next) => {
 
   if (
     userType != "admin" &&
-    course.instructor != userId &&
+    course.instructor.id != userId &&
     !req.user.enrolledCourses.includes(courseId)
   ) {
     throw new AppError("You are not allowed to access this course", 401)
   }
-
+  console.log(userId)
   if (req.user.enrolledCourses.includes(courseId)) {
-    course.activities.map((activity) => {
-      if (activity["__it"] == "QuizActivity") {
-        i = activity["students"].findIndex((x) => x == 4)
-        activity["students"] = activity["students"][i]
-        activity["grades"] = activity["grades"][i]
+    course.activities = course.activities.map((activity) => {
+      if (activity.type == "QuizActivity") {
+        i = activity["students"].findIndex((x) => x == userId)
+        if (i >= 0) {
+          activity["students"] = activity["students"][i]
+          activity["grades"] = activity["grades"][i]
+          console.log(userId)
+          console.log(activity["students"])
+        }
       }
       return activity
     })
   }
   res.status(200).json({
     status: "success",
-    data: course,
+    data: { course },
   })
 })
 

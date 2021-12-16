@@ -4,7 +4,8 @@ const DbQueryManager = require("../utils/dbQueryManager")
 const User = require("../models/UserModel")
 
 module.exports.me = catchAsync(async (req, res, next) => {
-  res.status(200).json({ status: "success", user: req.user.toPublic() })
+  const user = req.user.toPublic()
+  res.status(200).json({ status: "success", data: { user } })
 })
 
 module.exports.changeRole = catchAsync(async (req, res, next) => {

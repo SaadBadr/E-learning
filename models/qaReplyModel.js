@@ -17,5 +17,9 @@ const qaReplySchema = new mongoose.Schema(
   }
 )
 
+qaReplySchema.pre(/^find/, function () {
+  this.find({ active: true }).select("-active")
+})
+
 const QAReply = mongoose.model("QAReply", qaReplySchema)
 module.exports = QAReply
