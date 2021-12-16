@@ -1,9 +1,8 @@
 const catchAsync = require("../utils/catchAsync")
 const AppError = require("../utils/appError")
-const DbQueryManager = require("../utils/dbQueryManager")
 const Course = require("../models/CourseModel")
 
-module.exports.courseCreate = catchAsync(async (req, res, next) => {
+module.exports.createCourse = catchAsync(async (req, res, next) => {
   const { syllabus, title } = req.body
   const instructor = req.user._id
 
@@ -11,75 +10,61 @@ module.exports.courseCreate = catchAsync(async (req, res, next) => {
   next()
 })
 
-module.exports.getAllCourses = catchAsync(async (req, res, next) => {
-  const courses = await Course.find({})
-  res.status(200).json({
-    status: "success",
-    data: { courses: courses },
-  })
-})
+module.exports.getCourse = catchAsync(async (req, res, next) => {
+  req.popOptions = [
+    {
+      path: "instructor",
+      select: "id firstName lastName username birthDate email background",
+    },
+    {
+      path: "activities",
+    },
+  ]
 
-module.exports.courseGet = catchAsync(async (req, res, next) => {
-  const courseId = req.params.id
-  const userId = req.user._id.toString()
-  const userType = req.user.type
-  const data = await Course.findById(courseId)
-    .populate("activities", "-active")
-    .populate(
-      "instructor",
-      "id firstName lastName username birthDate email background"
-    )
-
-  const course = data.toJSON()
-
-  if (!course) {
-    throw new AppError("Course not found!", 400)
-  }
-  if (
-    userType != "admin" &&
-    course.instructor.id != userId &&
-    !req.user.enrolledCourses.includes(courseId)
-  ) {
-    throw new AppError("You are not allowed to access this course", 401)
-  }
-  if (req.user.enrolledCourses.includes(courseId)) {
-    course.activities = course.activities.map((activity) => {
-      if (activity.type == "QuizActivity") {
-        activity.grades = activity.grades.filter(
-          (grade) => grade.student == userId
+  // filter quiz grades to only return the user grade
+  req.customManipulation = function (doc) {
+    doc.activities = doc.activities.map((activity) => {
+      if (activity.grades) {
+        activity.grades = activity.grades.filter((grade) =>
+          grade.student.equals(this.user._id)
         )
-        delete activity.answers
-        console.log(activity)
+        // deleting answers if user not the instructor
+        if (!doc.instructor._id.equals(this.user._id)) activity.answers = null
       }
-      return activity
+      return doc.activities
     })
   }
-  res.status(200).json({
-    status: "success",
-    data: { course },
-  })
+  next()
 })
 
-module.exports.updateCourse = catchAsync(async (req, res, next) => {
-  const course = await Course.findById(req.params.id)
+module.exports.deleteCourse = catchAsync(async (req, res, next) => {})
 
-  if (!course) throw new AppError("Course not found!", 404)
-  if (course.instructor != req.user.id)
-    throw new AppError("You are not authorized to update this course!", 401)
+// only instructor of the course => ["instructor"]
+// instructor of the course and the admin ["instructor", "admin"]
+// only students of the course ["learner"]
+// only students of the course and the admin ["learner", "admin"]
 
-  const { title, syllabus, active } = req.body
+module.exports.courseRouteRestrictTo = (...roles) => {
+  return catchAsync(async (req, res, next) => {
+    const course = await Course.findById(req.params.id)
 
-  const updatedCourse = await Course.findByIdAndUpdate(
-    course._id,
-    { title, syllabus, active },
-    {
-      runValidators: true,
-      new: true,
+    if (!course) throw new AppError("Course not found!", 404)
+
+    const adminAuhthorized = roles.includes("admin")
+    const instructorAuhthorized = roles.includes("instructor")
+    const learnerAuhthorized = roles.includes("learner")
+
+    const adminCondition = adminAuhthorized && req.user.type == "admin"
+
+    const instructorCondition =
+      instructorAuhthorized && req.user._id.equals(course.instructor)
+
+    const learnerCondition =
+      learnerAuhthorized && req.user.enrolledCourses.includes(req.params.id)
+
+    if (!(adminCondition || instructorCondition || learnerCondition)) {
+      throw new AppError("You are not allowed to perform this action!", 401)
     }
-  )
-
-  res.status(200).json({
-    status: "success",
-    data: updatedCourse,
+    next()
   })
-})
+}

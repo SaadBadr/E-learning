@@ -25,14 +25,20 @@ const activitySchema = new mongoose.Schema(
     },
   },
   {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
     timestamps: { createdAt: true, updatedAt: false },
   }
 )
 
-activitySchema.virtual("type").get(function () {
-  return this["__t"]
+activitySchema.set("toJSON", {
+  transform: function (doc, ret, options) {
+    ret.id = ret._id
+    ret.type = ret.__t
+    delete ret._id
+    delete ret.__t
+    delete ret.__v
+    delete ret.active
+    return ret
+  },
 })
 
 const Activity = mongoose.model("Activity", activitySchema)

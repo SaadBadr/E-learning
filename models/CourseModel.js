@@ -45,8 +45,7 @@ const courseSchema = new mongoose.Schema(
     },
   },
   {
-    toJSON: { virtuals: true },
-    toObject: { virtuals: true },
+    timestamps: { createdAt: true, updatedAt: false },
   }
 )
 
@@ -57,9 +56,25 @@ courseSchema.virtual("activities", {
   localField: "_id",
 })
 
-courseSchema.pre(/^find/, function () {
-  this.find({ active: true }).select("-active")
+courseSchema.set("toJSON", {
+  virtuals: true,
+  transform: function (doc, ret, options) {
+    var retJson = {
+      id: ret._id,
+      title: ret.title,
+      syllabus: ret.syllabus,
+      createdAt: ret.createdAt,
+      instructor: ret.instructor,
+      activities: ret.activities,
+      qa: ret.qa,
+    }
+    return retJson
+  },
 })
+
+// courseSchema.pre(/^find/, function () {
+//   this.find({ active: true }).select("-active")
+// })
 
 const Course = mongoose.model("Course", courseSchema)
 module.exports = Course

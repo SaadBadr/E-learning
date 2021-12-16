@@ -20,5 +20,6 @@ const quizActivitySchema = new mongoose.Schema({
 })
 
 // quizActivity is a discriminator of Activity, i.e. quizActivity inherits Activity schema
+
 const quizActivity = Activity.discriminator("QuizActivity", quizActivitySchema)
 module.exports = quizActivity

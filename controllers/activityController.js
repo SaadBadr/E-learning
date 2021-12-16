@@ -5,14 +5,10 @@ const Course = require("../models/CourseModel")
 const { promisify } = require("util")
 const path = require("path")
 const QuizActivity = require("../models/quizActivityModel")
+const fs = require("fs")
 
-module.exports.activityCreate = catchAsync(async (req, res, next) => {
-  const course = await Course.findById(req.params.id)
-
-  if (!course) throw new AppError("Invalid course!", 400)
-  if (req.user.id != course.instructor)
-    throw new AppError("You are unauthorized!", 401)
-  req.body.course = course._id
+module.exports.createActivity = catchAsync(async (req, res, next) => {
+  req.body.course = req.params.id
   next()
 })
 
@@ -23,14 +19,47 @@ module.exports.uploadPdf = catchAsync(async (req, res, next) => {
   const filename = file.name
   const savedname = file.md5 + new Date().getTime()
   const extension = path.extname(filename)
-  const url = `/public/uploads/pdf/${savedname}${extension}`
+  var fs = require("fs")
+
+  const dir = `./public/uploads/pdf/${req.params.id}`
+  if (!fs.existsSync(dir)) await promisify(fs.mkdir)(dir)
+
+  const url = `/public/uploads/pdf/${req.params.id}/${savedname}${extension}`
   await promisify(file.mv)(`.${url}`)
   req.body.url = url
   next()
 })
 
+module.exports.updatePdf = catchAsync(async (req, res, next) => {
+  if (!req.files?.file) next()
+  const file = req.files.file
+  if (file.mimetype != "application/pdf")
+    throw new AppError("Only Pdf files are allowed!", 400)
+  const filename = file.name
+  const savedname = file.md5 + new Date().getTime()
+  const extension = path.extname(filename)
+  var fs = require("fs")
+
+  const dir = `./public/uploads/pdf/${req.params.id}`
+  if (!fs.existsSync(dir)) await promisify(fs.mkdir)(dir)
+
+  const url = `/public/uploads/pdf/${req.params.id}/${savedname}${extension}`
+  await promisify(file.mv)(`.${url}`)
+  req.body.url = url
+
+  const activity = await PdfActivity.findById(req.params.pid)
+  await promisify(fs.unlink)(`.${activity.url}`)
+  next()
+})
+
+module.exports.deletePdf = catchAsync(async (req, res, next) => {
+  const activity = await PdfActivity.findById(req.params.pid)
+  await promisify(fs.unlink)(`.${activity.url}`)
+  next()
+})
+
 module.exports.submitQuiz = catchAsync(async (req, res, next) => {
-  const quiz = await QuizActivity.findById(req.params.id)
+  const quiz = await QuizActivity.findById(req.params.qid)
   if (!quiz) throw new AppError("Quiz not found!", 404)
 
   if (!req.user.enrolledCourses.includes(quiz.course))

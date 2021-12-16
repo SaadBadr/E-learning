@@ -1,7 +1,7 @@
 const express = require("express")
 const authenticationController = require("../controllers/authenticationController")
 const courseController = require("./../controllers/courseController")
-const factoryHandler = require("./../controllers/factoryHandler")
+const handlerFactory = require("./../controllers/handlerFactory")
 const activityRoutes = require("./activityRoutes")
 const enrollRoutes = require("./enrollRoutes")
 const qaRoutes = require("./qaRoutes")
@@ -13,19 +13,26 @@ router
   .post(
     authenticationController.protect(),
     authenticationController.restrictTo("admin", "instructor"),
-    courseController.courseCreate,
-    factoryHandler.createOneFactory(Course)
+    courseController.createCourse,
+    handlerFactory.createOne(Course)
   )
-  .get(courseController.getAllCourses)
+  .get(handlerFactory.getAll(Course))
 
 router
   .route("/:id")
-  .get(authenticationController.protect(), courseController.courseGet)
+  .get(
+    authenticationController.protect(),
+    courseController.courseRouteRestrictTo("admin", "instructor", "learner"),
+    courseController.getCourse,
+    handlerFactory.getOne(Course)
+  )
   .patch(
     authenticationController.protect(),
-    authenticationController.restrictTo("admin", "instructor"),
-    courseController.updateCourse
+    authenticationController.protect("admin", "instructor"),
+    courseController.courseRouteRestrictTo("admin", "instructor"),
+    handlerFactory.updateOne(Course)
   )
+  .delete(courseController.deleteCourse, handlerFactory.deleteOne(Course))
 
 // nested routes for activities
 router.use(
