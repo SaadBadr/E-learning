@@ -70,9 +70,8 @@ exports.getOne = (Model, popOptions) =>
 
 exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
-    const features = new DbQueryManager(Model.find()).all(req.query)
-    const doc = await features.query
-
+    const features = new DbQueryManager(Model.find())
+    const doc = await features.all(req.query)
     // SEND RESPONSE
     res.status(200).json({
       status: "success",

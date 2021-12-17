@@ -164,5 +164,14 @@ userSchema.methods.toPublic = function () {
   return publicUser
 }
 
+userSchema.set("toJSON", {
+  transform: function (doc, ret, options) {
+    ret.id = ret._id
+    delete ret._id
+    delete ret.__v
+    return ret
+  },
+})
+
 const User = mongoose.model("User", userSchema)
 module.exports = User

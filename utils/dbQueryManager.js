@@ -12,6 +12,7 @@ class DbQueryManager {
       /\b(gte|gt|lte|lt)\b/g,
       (match) => `$${match}`
     )
+    console.log(fieldsStr, JSON.parse(fieldsStr))
     this.dbQuery = this.dbQuery.find(JSON.parse(fieldsStr))
 
     return this.dbQuery
@@ -38,7 +39,7 @@ class DbQueryManager {
   }
 
   all(queryStringObject) {
-    let { fields, sort, page, limit } = queryStringObject
+    let { fields, sort, page, limit, popOptions } = queryStringObject
     page = page || 1
     limit = limit || process.env.DB_QUERY_LIMIT
     const filterFields = getQueryStringFilterFields(queryStringObject)
@@ -46,6 +47,7 @@ class DbQueryManager {
     if (fields) this.dbQuery = this.selectFields(fields)
     if (sort) this.dbQuery = this.sort(sort)
     if (page && limit) this.dbQuery = this.paginate(page, limit)
+    if (popOptions) this.dbQuery = this.dbQuery.populate(popOptions)
     return this.dbQuery
   }
 

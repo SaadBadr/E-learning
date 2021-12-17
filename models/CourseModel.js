@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const Activity = require("./activityModel")
+const QAQuestion = require("./qaQuestionModel")
 const User = require("./UserModel")
 const fs = require("fs")
 const { promisify } = require("util")
@@ -85,6 +86,7 @@ courseSchema.pre("deleteOne", { document: true }, async function (next) {
     })
   )
   promises.push(Activity.deleteMany({ course: this._id }).exec())
+  promises.push(QAQuestion.deleteMany({ course: this._id }).exec())
   promises.push(
     User.updateMany({}, { $pull: { enrolledCourses: this._id } }).exec()
   )
