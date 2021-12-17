@@ -58,14 +58,14 @@ module.exports.restrictToAuthor = (model) =>
   })
 
 module.exports.updateReply = catchAsync(async (req, res, next) => {
-  req.reply.reply = req.body.reply || req.reply.reply
+  req.reply.reply = req.body.reply
   await req.question.save()
   res.status(200).json({ status: "success", data: { reply: req.reply } })
 })
 
 module.exports.deleteReply = catchAsync(async (req, res, next) => {
-  req.question.replies = req.question.replies.filter((r) =>
-    r._id.equals(req.params.rid)
+  req.question.replies = req.question.replies.filter(
+    (r) => !r._id.equals(req.params.rid)
   )
   await req.question.save()
   res.status(204).json({ status: "success" })
@@ -85,6 +85,6 @@ module.exports.getQuestions = catchAsync(async (req, res, next) => {
       },
     },
   ]
-  req.query.course = "61bbd29ce4c76d744f7ae860"
+  req.query.course = req.params.id
   next()
 })
