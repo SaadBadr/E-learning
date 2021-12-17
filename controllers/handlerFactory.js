@@ -2,9 +2,11 @@ const catchAsync = require("./../utils/catchAsync")
 const DbQueryManager = require("./../utils/dbQueryManager")
 const AppError = require("../utils/appError")
 
-exports.deleteOne = (Model) =>
+exports.deleteOne = (Model, params_id) =>
   catchAsync(async (req, res, next) => {
-    const doc = await Model.findOne({ _id: req.params.id })
+    const doc = await Model.findOne({
+      _id: req.params[params_id] || req.params.id,
+    })
     if (!doc) {
       return next(new AppError("No document found with that ID", 404))
     }
@@ -16,12 +18,16 @@ exports.deleteOne = (Model) =>
     })
   })
 
-exports.updateOne = (Model) =>
+exports.updateOne = (Model, params_id) =>
   catchAsync(async (req, res, next) => {
-    const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    })
+    const doc = await Model.findByIdAndUpdate(
+      req.params[params_id] || req.params.id,
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    )
 
     if (!doc) {
       return next(new AppError("No document found with that ID", 404))
@@ -47,11 +53,13 @@ exports.createOne = (Model) =>
     })
   })
 
-exports.getOne = (Model, popOptions) =>
+exports.getOne = (Model, popOptions, params_id) =>
   catchAsync(async (req, res, next) => {
-    let query = Model.findById(req.params.id)
-    if (popOptions || req.popOptions)
-      query = query.populate(popOptions || req.popOptions)
+    const x = req.params[params_id] || req.params.id
+    console.log(x)
+    let query = Model.findById(req.params[params_id] || req.params.id)
+    if (popOptions || req.query.popOptions)
+      query = query.populate(popOptions || req.query.popOptions)
     const doc = await query
 
     if (req.customManipulation) req.customManipulation(doc)

@@ -2,7 +2,7 @@ const catchAsync = require("../utils/catchAsync")
 const AppError = require("../utils/appError")
 const DbQueryManager = require("../utils/dbQueryManager")
 const Course = require("../models/CourseModel")
-const QAQuestion = require("../models/qaQuestionModel")
+const Question = require("../models/questionModel")
 const User = require("../models/UserModel")
 
 module.exports.createQuestion = catchAsync(async (req, res, next) => {
@@ -18,26 +18,30 @@ module.exports.updateQuestion = catchAsync(async (req, res, next) => {
 })
 
 module.exports.createReply = catchAsync(async (req, res, next) => {
-  const question = await QAQuestion.findById(req.params.qid)
+  const question = await Question.findById(req.params.qid)
   if (!question || !question.course.equals(req.params.id))
     throw new AppError("Question not found!", 404)
-  const reply = {
+  let reply = {
     author: req.user._id,
     reply: req.body.reply,
     createdAt: new Date(),
   }
   question.replies.push(reply)
   const q = await question.save()
+
+  reply = { ...q.replies[q.replies.length - 1].toJSON({ virtuals: true }) }
+  delete reply._id
+
   res.status(201).json({
     status: "success",
-    data: { reply: q.replies[q.replies.length - 1] },
+    data: { data: reply },
   })
 })
 
 module.exports.restrictToAuthor = (model) =>
   catchAsync(async (req, res, next) => {
     console.log("sadsasd")
-    const question = await QAQuestion.findById(req.params.qid)
+    const question = await Question.findById(req.params.qid)
     if (!question || !question.course.equals(req.params.id))
       throw new AppError("Question not found!", 404)
 
@@ -45,6 +49,8 @@ module.exports.restrictToAuthor = (model) =>
       if (!question.author.equals(req.user._id))
         throw new AppError("You are not allowed to perform this action!", 401)
     } else {
+      console.log(req.params.rid)
+      console.log(question.replies)
       const reply = question.replies.find((r) => r._id.equals(req.params.rid))
       if (!reply) throw new AppError("Reply not found!", 404)
       console.log(reply.author)
@@ -60,7 +66,7 @@ module.exports.restrictToAuthor = (model) =>
 module.exports.updateReply = catchAsync(async (req, res, next) => {
   req.reply.reply = req.body.reply
   await req.question.save()
-  res.status(200).json({ status: "success", data: { reply: req.reply } })
+  res.status(200).json({ status: "success", data: { data: req.reply } })
 })
 
 module.exports.deleteReply = catchAsync(async (req, res, next) => {
@@ -71,7 +77,7 @@ module.exports.deleteReply = catchAsync(async (req, res, next) => {
   res.status(204).json({ status: "success" })
 })
 
-module.exports.getQuestions = catchAsync(async (req, res, next) => {
+module.exports.populateAuthors = catchAsync(async (req, res, next) => {
   req.query.popOptions = [
     {
       path: "author",
@@ -85,6 +91,10 @@ module.exports.getQuestions = catchAsync(async (req, res, next) => {
       },
     },
   ]
+  next()
+})
+
+module.exports.setCourseQuery = catchAsync(async (req, res, next) => {
   req.query.course = req.params.id
   next()
 })

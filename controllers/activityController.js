@@ -1,6 +1,6 @@
 const catchAsync = require("../utils/catchAsync")
 const AppError = require("../utils/appError")
-const DbQueryManager = require("../utils/dbQueryManager")
+const PdfActivity = require("../models/pdfActivityModel")
 const Course = require("../models/CourseModel")
 const path = require("path")
 const QuizActivity = require("../models/quizActivityModel")
@@ -22,7 +22,7 @@ module.exports.uploadPdf = catchAsync(async (req, res, next) => {
   var fs = require("fs")
 
   const dir = `./public/uploads/pdf/${req.params.id}`
-  if (!fs.existsSync(dir)) await promisify(fs.mkdir)(dir)
+  if (!fs.existsSync(dir)) await promisify(fs.mkdir)(dir, { recursive: true })
 
   const url = `/public/uploads/pdf/${req.params.id}/${savedname}${extension}`
   await promisify(file.mv)(`.${url}`)
@@ -31,7 +31,13 @@ module.exports.uploadPdf = catchAsync(async (req, res, next) => {
 })
 
 module.exports.updatePdf = catchAsync(async (req, res, next) => {
+  const activity = await PdfActivity.findById(req.params.pid)
+
+  if (!activity)
+    return next(new AppError("No document found with that ID", 404))
+
   if (!req.files?.file) next()
+  // upload new file
   const file = req.files.file
   if (file.mimetype != "application/pdf")
     throw new AppError("Only Pdf files are allowed!", 400)
@@ -47,8 +53,9 @@ module.exports.updatePdf = catchAsync(async (req, res, next) => {
   await promisify(file.mv)(`.${url}`)
   req.body.url = url
 
-  const activity = await PdfActivity.findById(req.params.pid)
+  // delete old file
   await promisify(fs.unlink)(`.${activity.url}`)
+
   next()
 })
 

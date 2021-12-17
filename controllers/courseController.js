@@ -11,7 +11,7 @@ module.exports.createCourse = catchAsync(async (req, res, next) => {
 })
 
 module.exports.getCourse = catchAsync(async (req, res, next) => {
-  req.popOptions = [
+  req.query.popOptions = [
     {
       path: "instructor",
       select: "id firstName lastName username birthDate email background",

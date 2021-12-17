@@ -119,6 +119,13 @@ const userSchema = new mongoose.Schema(
   }
 )
 
+// adding ownedCourses as virtual ref to get the courses that reference the instructor with "parent ref."
+userSchema.virtual("ownedCourses", {
+  ref: "Course",
+  foreignField: "instructor",
+  localField: "_id",
+})
+
 userSchema.statics.validatePassword = (password) => {
   if (!password) throw new AppError("Password must be specifed.", 400)
   if (typeof password !== "string") {
@@ -151,9 +158,7 @@ userSchema.statics.publicUser = () => {
 
 // Returns an object contains the public user info.
 userSchema.methods.toPublic = function () {
-  const publicUser = this.toObject({
-    virtuals: true,
-  })
+  const publicUser = this.toJSON()
   const fieldsToExclude = userSchema.statics.publicUser()
 
   Object.keys(publicUser).forEach((el) => {
@@ -165,6 +170,7 @@ userSchema.methods.toPublic = function () {
 }
 
 userSchema.set("toJSON", {
+  virtuals: true,
   transform: function (doc, ret, options) {
     ret.id = ret._id
     delete ret._id

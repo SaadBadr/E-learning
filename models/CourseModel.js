@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 const Activity = require("./activityModel")
-const QAQuestion = require("./qaQuestionModel")
+const Question = require("./questionModel")
 const User = require("./UserModel")
 const fs = require("fs")
 const { promisify } = require("util")
@@ -38,11 +38,6 @@ const courseSchema = new mongoose.Schema(
       required: [true, "Instructor id must be specified."],
       ref: "User",
     },
-    qa: {
-      type: [mongoose.Schema.ObjectId],
-      ref: "QAQuestion",
-      default: [],
-    },
     active: {
       // The course is active --> not deleted
       type: Boolean,
@@ -71,7 +66,7 @@ courseSchema.set("toJSON", {
       createdAt: ret.createdAt,
       instructor: ret.instructor,
       activities: ret.activities,
-      qa: ret.qa,
+      questions: ret.questions,
     }
     return retJson
   },
@@ -86,7 +81,7 @@ courseSchema.pre("deleteOne", { document: true }, async function (next) {
     })
   )
   promises.push(Activity.deleteMany({ course: this._id }).exec())
-  promises.push(QAQuestion.deleteMany({ course: this._id }).exec())
+  promises.push(Question.deleteMany({ course: this._id }).exec())
   promises.push(
     User.updateMany({}, { $pull: { enrolledCourses: this._id } }).exec()
   )

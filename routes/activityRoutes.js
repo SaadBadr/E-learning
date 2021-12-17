@@ -4,6 +4,7 @@ const activityController = require("./../controllers/activityController")
 const courseController = require("./../controllers/courseController")
 const handlerFactory = require("./../controllers/handlerFactory")
 const VideoActivity = require("../models/videoActivityModel")
+const Activity = require("../models/activityModel")
 const PdfActivity = require("../models/pdfActivityModel")
 const QuizActivity = require("../models/quizActivityModel")
 
@@ -18,14 +19,17 @@ router
     activityController.uploadPdf,
     handlerFactory.createOne(PdfActivity)
   )
+
+router
+  .route("/pdf/:pid")
   .patch(
     courseController.courseRouteRestrictTo("instructor"),
     activityController.updatePdf,
-    handlerFactory.updateOne(PdfActivity)
+    handlerFactory.updateOne(PdfActivity, "pid")
   )
   .delete(
     courseController.courseRouteRestrictTo("instructor"),
-    handlerFactory.deleteOne(PdfActivity)
+    handlerFactory.deleteOne(PdfActivity, "pid")
   )
 
 router
@@ -35,13 +39,16 @@ router
     activityController.createActivity,
     handlerFactory.createOne(VideoActivity)
   )
+
+router
+  .route("/video/:vid")
   .patch(
     courseController.courseRouteRestrictTo("instructor"),
-    handlerFactory.updateOne(VideoActivity)
+    handlerFactory.updateOne(VideoActivity, "vid")
   )
   .delete(
     courseController.courseRouteRestrictTo("instructor"),
-    handlerFactory.deleteOne(VideoActivity)
+    handlerFactory.deleteOne(VideoActivity, "vid")
   )
 
 router
@@ -51,14 +58,6 @@ router
     activityController.createActivity,
     handlerFactory.createOne(QuizActivity)
   )
-  .patch(
-    courseController.courseRouteRestrictTo("instructor"),
-    handlerFactory.updateOne(QuizActivity)
-  )
-  .delete(
-    courseController.courseRouteRestrictTo("instructor"),
-    handlerFactory.deleteOne(QuizActivity)
-  )
 
 router
   .route("/quiz/:qid/")
@@ -66,4 +65,13 @@ router
     courseController.courseRouteRestrictTo("learner"),
     activityController.submitQuiz
   )
+  .patch(
+    courseController.courseRouteRestrictTo("instructor"),
+    handlerFactory.updateOne(QuizActivity, "qid")
+  )
+  .delete(
+    courseController.courseRouteRestrictTo("instructor"),
+    handlerFactory.deleteOne(QuizActivity, "qid")
+  )
+
 module.exports = router
