@@ -40,7 +40,6 @@ module.exports.createReply = catchAsync(async (req, res, next) => {
 
 module.exports.restrictToAuthor = (model) =>
   catchAsync(async (req, res, next) => {
-    console.log("sadsasd")
     const question = await Question.findById(req.params.qid)
     if (!question || !question.course.equals(req.params.id))
       throw new AppError("Question not found!", 404)
@@ -49,12 +48,8 @@ module.exports.restrictToAuthor = (model) =>
       if (!question.author.equals(req.user._id))
         throw new AppError("You are not allowed to perform this action!", 401)
     } else {
-      console.log(req.params.rid)
-      console.log(question.replies)
       const reply = question.replies.find((r) => r._id.equals(req.params.rid))
       if (!reply) throw new AppError("Reply not found!", 404)
-      console.log(reply.author)
-      console.log(req.user._id)
       if (!reply.author.equals(req.user._id))
         throw new AppError("You are not allowed to perform this action!", 401)
       req.reply = reply

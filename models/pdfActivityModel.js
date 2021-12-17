@@ -22,7 +22,6 @@ pdfActivitySchema.pre("deleteOne", { document: true }, async function (next) {
 pdfActivitySchema.pre("deleteMany", async function (next) {
   try {
     let deletedData = await pdfActivity.find(this._conditions).lean()
-    console.log(deletedData)
     if (deletedData) {
       promises = []
       deletedData.forEach((doc) =>

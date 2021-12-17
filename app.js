@@ -10,6 +10,7 @@ const passport = require("passport")
 const path = require("path")
 const compression = require("compression")
 const fileUpload = require("express-fileupload")
+const cors = require("cors")
 
 // Controllers:-
 const errorController = require("./controllers/errorController")
@@ -43,6 +44,9 @@ app.use(hpp())
 // Middleware for debugging [Displays each incoming request in the console]
 // if (process.env.NODE_ENV === "development")
 app.use(morgan("dev"))
+
+// using cors in development
+if (process.env.NODE_ENV === "development") app.use(cors())
 
 // Reading data from the body of the request as json and converting it to javascript object into req.body
 app.use(express.json({ limit: "10kb" }))

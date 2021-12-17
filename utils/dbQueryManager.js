@@ -12,7 +12,6 @@ class DbQueryManager {
       /\b(gte|gt|lte|lt)\b/g,
       (match) => `$${match}`
     )
-    console.log(fieldsStr, JSON.parse(fieldsStr))
     this.dbQuery = this.dbQuery.find(JSON.parse(fieldsStr))
 
     return this.dbQuery
