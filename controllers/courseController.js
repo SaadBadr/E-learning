@@ -31,7 +31,7 @@ module.exports.getCourse = catchAsync(async (req, res, next) => {
         // deleting answers if user not the instructor
         if (!doc.instructor._id.equals(this.user._id)) activity.answers = null
       }
-      return doc.activities
+      return activity
     })
   }
   next()

@@ -40,12 +40,12 @@ module.exports.login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ username: req.body.username })
   if (!user) {
     // Invalid email
-    throw new AppError("Invalid username or password", 401)
+    throw new AppError("Invalid username or password", 400)
   }
   const isValid = await verifyPassword(req.body.password, user.password)
   if (!isValid) {
     // Invalid password
-    throw new AppError("Invalid email or password", 401)
+    throw new AppError("Invalid email or password", 400)
   }
 
   // Valid email & pass
