@@ -85,6 +85,7 @@ exports.getAll = (Model) =>
       results: doc.length,
       data: {
         data: doc,
+        total: await Model.count(),
       },
     })
   })
