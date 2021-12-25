@@ -11,17 +11,6 @@ module.exports.createCourse = catchAsync(async (req, res, next) => {
 })
 
 module.exports.getCourse = catchAsync(async (req, res, next) => {
-  var page = req.body.page ? req.body.page : 1
-  var perPage = req.body.itemsPerPage ? req.body.itemsPerPage : 10
-  var query = {}
-  var abc = { path: "hospitalType", select: "field which you want to show" }
-  var options = {
-    populate: abc,
-    lean: true,
-    limit: perPage,
-    page: page,
-  }
-
   req.query.popOptions = [
     {
       path: "instructor",
