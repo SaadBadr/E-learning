@@ -61,11 +61,11 @@ exports.getOne = (Model, popOptions, params_id) =>
       query = query.populate(popOptions || req.query.popOptions)
     const doc = await query
 
-    if (req.customManipulation) req.customManipulation(doc)
-
     if (!doc) {
       return next(new AppError("No document found with that ID", 404))
     }
+
+    if (req.customManipulation) req.customManipulation(doc)
 
     res.status(200).json({
       status: "success",
