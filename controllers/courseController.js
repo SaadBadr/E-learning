@@ -20,6 +20,9 @@ module.exports.getCourse = catchAsync(async (req, res, next) => {
       path: "activities",
       options: {},
     },
+    {
+      path: "total_activities",
+    },
   ]
 
   // adding sorting and pagination to activities
@@ -34,7 +37,6 @@ module.exports.getCourse = catchAsync(async (req, res, next) => {
 
   // filter quiz grades to only return the user grade
   req.customManipulation = function (doc) {
-    doc.total = doc.activities.length
     doc.activities = doc.activities.map((activity) => {
       if (activity.grades) {
         activity.grades = activity.grades.filter((grade) =>

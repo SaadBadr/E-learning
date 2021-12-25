@@ -56,6 +56,13 @@ courseSchema.virtual("activities", {
   localField: "_id",
 })
 
+courseSchema.virtual("total_activities", {
+  ref: "Activity",
+  foreignField: "course",
+  localField: "_id",
+  count: true,
+})
+
 courseSchema.set("toJSON", {
   virtuals: true,
   transform: function (doc, ret, options) {
@@ -65,8 +72,8 @@ courseSchema.set("toJSON", {
       syllabus: ret.syllabus,
       createdAt: ret.createdAt,
       instructor: ret.instructor,
+      total_activities: ret.total_activities,
       activities: ret.activities,
-      questions: ret.questions,
     }
     return retJson
   },
