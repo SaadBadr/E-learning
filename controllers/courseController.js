@@ -11,6 +11,17 @@ module.exports.createCourse = catchAsync(async (req, res, next) => {
 })
 
 module.exports.getCourse = catchAsync(async (req, res, next) => {
+  var page = req.body.page ? req.body.page : 1
+  var perPage = req.body.itemsPerPage ? req.body.itemsPerPage : 10
+  var query = {}
+  var abc = { path: "hospitalType", select: "field which you want to show" }
+  var options = {
+    populate: abc,
+    lean: true,
+    limit: perPage,
+    page: page,
+  }
+
   req.query.popOptions = [
     {
       path: "instructor",
@@ -18,11 +29,23 @@ module.exports.getCourse = catchAsync(async (req, res, next) => {
     },
     {
       path: "activities",
+      options: {},
     },
   ]
 
+  // adding sorting and pagination to activities
+  if (req.query.sort) req.query.popOptions[1].options.sort = req.query.sort
+  if (req.query.limit) {
+    const page = req.query.page * 1 || 1
+    const limit = req.query.limit * 1
+    const skip = (page - 1) * limit
+    req.query.popOptions[1].options.limit = limit
+    req.query.popOptions[1].options.skip = skip
+  }
+
   // filter quiz grades to only return the user grade
   req.customManipulation = function (doc) {
+    doc.total = doc.activities.length
     doc.activities = doc.activities.map((activity) => {
       if (activity.grades) {
         activity.grades = activity.grades.filter((grade) =>
