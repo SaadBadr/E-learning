@@ -11,6 +11,22 @@ module.exports.createQuestion = catchAsync(async (req, res, next) => {
   next()
 })
 
+module.exports.getAllQuestions = () =>
+  catchAsync(async (req, res, next) => {
+    const features = new DbQueryManager(Question.find())
+    const doc = await features.all(req.query)
+
+    // SEND RESPONSE
+    res.status(200).json({
+      status: 'success',
+      results: doc.length,
+      data: {
+        data: doc,
+        total: await Question.countDocuments({ course: req.params.id }),
+      },
+    });
+  })
+
 module.exports.updateQuestion = catchAsync(async (req, res, next) => {
   const { title, description } = req.body
   req.body = { title, description }

@@ -17,7 +17,7 @@ router
     courseController.courseRouteRestrictTo("admin", "instructor", "learner"),
     questionController.populateAuthors,
     questionController.setCourseQuery,
-    handlerFactory.getAll(Question)
+    questionController.getAllQuestions()
   )
 
 router
