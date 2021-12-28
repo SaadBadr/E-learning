@@ -92,9 +92,15 @@ app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Methods", "*")
   next()
 })
-// Serve static files ===> Frontend
+// Serve static files
+
+// Frontend
 const frontendPath = path.join(__dirname, process.env.FRONTEND_BUILD_LOCATION)
 app.use(express.static(frontendPath))
+
+// Public Folder
+const publicFolderPath = path.join(__dirname, process.env.PUBLIC_FOLDER)
+app.use(express.static(publicFolderPath))
 
 const apiUrlBase = `${process.env.API_URL_PREFIX}/v${process.env.API_VERSION}`
 
