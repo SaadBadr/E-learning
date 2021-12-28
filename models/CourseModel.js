@@ -82,7 +82,7 @@ courseSchema.set("toJSON", {
 courseSchema.pre("deleteOne", { document: true }, async function (next) {
   promises = []
   promises.push(
-    promisify(fs.rm)(`./public/uploads/pdf/${this._id}`, {
+    promisify(fs.rm)(`${process.env.PUBLIC_FOLDER}/uploads/pdf/${this._id}`, {
       recursive: true,
       force: true,
     })

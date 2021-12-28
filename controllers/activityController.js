@@ -21,11 +21,11 @@ module.exports.uploadPdf = catchAsync(async (req, res, next) => {
   const extension = path.extname(filename)
   var fs = require("fs")
 
-  const dir = `./public/uploads/pdf/${req.params.id}`
+  const dir = `${process.env.PUBLIC_FOLDER}/uploads/pdf/${req.params.id}`
   if (!fs.existsSync(dir)) await promisify(fs.mkdir)(dir, { recursive: true })
 
-  const url = `/public/uploads/pdf/${req.params.id}/${savedname}${extension}`
-  await promisify(file.mv)(`.${url}`)
+  const url = `/uploads/pdf/${req.params.id}/${savedname}${extension}`
+  await promisify(file.mv)(`${process.env.PUBLIC_FOLDER}/${url}`)
   req.body.url = url
   next()
 })
@@ -46,15 +46,15 @@ module.exports.updatePdf = catchAsync(async (req, res, next) => {
   const extension = path.extname(filename)
   var fs = require("fs")
 
-  const dir = `./public/uploads/pdf/${req.params.id}`
+  const dir = `${process.env.PUBLIC_FOLDER}/uploads/pdf/${req.params.id}`
   if (!fs.existsSync(dir)) await promisify(fs.mkdir)(dir)
 
-  const url = `/public/uploads/pdf/${req.params.id}/${savedname}${extension}`
-  await promisify(file.mv)(`.${url}`)
+  const url = `/uploads/pdf/${req.params.id}/${savedname}${extension}`
+  await promisify(file.mv)(`${process.env.PUBLIC_FOLDER}/${url}`)
   req.body.url = url
 
   // delete old file
-  await promisify(fs.unlink)(`.${activity.url}`)
+  await promisify(fs.unlink)(`${process.env.PUBLIC_FOLDER}/${activity.url}`)
 
   next()
 })

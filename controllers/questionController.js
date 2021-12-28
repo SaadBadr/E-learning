@@ -18,13 +18,13 @@ module.exports.getAllQuestions = () =>
 
     // SEND RESPONSE
     res.status(200).json({
-      status: 'success',
+      status: "success",
       results: doc.length,
       data: {
         data: doc,
         total: await Question.countDocuments({ course: req.params.id }),
       },
-    });
+    })
   })
 
 module.exports.updateQuestion = catchAsync(async (req, res, next) => {

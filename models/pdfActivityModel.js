@@ -13,7 +13,7 @@ const pdfActivitySchema = new mongoose.Schema({
 
 pdfActivitySchema.pre("deleteOne", { document: true }, async function (next) {
   try {
-    await promisify(fs.unlink)(`.${this.url}`)
+    await promisify(fs.unlink)(`${process.env.PUBLIC_FOLDER}/${this.url}`)
   } catch (error) {
     next(error)
   }
@@ -25,7 +25,9 @@ pdfActivitySchema.pre("deleteMany", async function (next) {
     if (deletedData) {
       promises = []
       deletedData.forEach((doc) =>
-        promises.push(promisify(fs.unlink)(`.${doc.url}`))
+        promises.push(
+          promisify(fs.unlink)(`${process.env.PUBLIC_FOLDER}/${doc.url}`)
+        )
       )
       Promise.all(promises)
     }
