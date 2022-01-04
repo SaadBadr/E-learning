@@ -1,15 +1,24 @@
 {
-    "parser": "babel-eslint",
-    "parserOptions": {
-      "sourceType": "module",
-      "ecmaFeatures": {
-        "modules": true
-      }
-    },
-    "plugins": ["prettier"],
-    "extends": ["prettier"],
-    "rules": {
-      "prettier/prettier": "error"
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "modules": true
     }
+  },
+  "env": {
+    "node": true,
+    "es6": true
+  },  
+  "plugins": ["prettier"],
+  "extends": ["prettier"],
+  "rules": {
+    "no-undef": 1,
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto"
+      }
+    ]
   }
-  
+}
