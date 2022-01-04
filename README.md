@@ -16,11 +16,11 @@ cd elearning
 ```
 npm i
 ```
-3. to seed the database
+3. seed the database
 ```
 npm run seed
 ```
-4. to start the project
+4. start the project
 ```
 npm start
 ```
