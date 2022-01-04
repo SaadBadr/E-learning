@@ -23,7 +23,7 @@ pdfActivitySchema.pre("deleteMany", async function (next) {
   try {
     let deletedData = await pdfActivity.find(this._conditions).lean()
     if (deletedData) {
-      promises = []
+      let promises = []
       deletedData.forEach((doc) =>
         promises.push(
           promisify(fs.unlink)(`${process.env.PUBLIC_FOLDER}/${doc.url}`)

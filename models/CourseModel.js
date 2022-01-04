@@ -80,7 +80,7 @@ courseSchema.set("toJSON", {
 })
 
 courseSchema.pre("deleteOne", { document: true }, async function (next) {
-  promises = []
+  let promises = []
   promises.push(
     promisify(fs.rm)(`${process.env.PUBLIC_FOLDER}/uploads/pdf/${this._id}`, {
       recursive: true,
