@@ -1,15 +1,39 @@
-# E-learning
-This project is a REST API for an E-learning website.
+# Elearning API
+REST API for an Elearning website
 
 
-# Dev Notes
-- You should have node installed with version >= 12
-- You should have npm installed.
-- You should have these two files `config\keys\publicKey.pem` and `config\keys\publicKey.pem` (keys used for signing jwt tokens)
-- You also need the `config.env` file (contains all secrets and config vars)
-- run `npm install` in the project's directory to install required packages
-- run `npm run develop` for development mode.
-- run `npm start` for production.
+![NodeJS](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white) ![ExpressJS](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white) ![MongoDB](https://img.shields.io/badge/MongoDB-white?style=for-the-badge&logo=mongodb&logoColor=4EA94B)
 
-# API
-<https://red-satellite-6607.postman.co/workspace/APT-project-workspace~0c9437c5-2d0e-4313-8549-bdbccfcea25f/collection/10290474-745e9aef-9327-43b4-885b-6f280ad2146c?ctx=documentation>
+### How to run
+
+###### First, please make sure you have [Node.js](https://nodejs.org/en/download/) and [MongoDB](https://docs.mongodb.com/manual/installation/) installed.
+
+1. navigate to the project folder
+```
+cd elearning
+```
+2. install npm dependencies
+```
+npm i
+```
+3. to seed the database
+```
+npm run seed
+```
+4. to start the project
+```
+npm start
+```
+
+### Documentaion
+You can find the api documentation at [Postman](https://documenter.getpostman.com/view/10290474/UVXbtyzK)
+
+### Important notes
+- config.env file in project's root directory is used to store the configuration "env. variables" 
+- In config.env, you can change NODE_ENV from development to production and vice versa
+    - development: error details and stack is returned, also logs are logged to the console
+    - production: production error version is returned, logs are logged to logs files 
+- The api default url is localhost:8000/api/v1
+    - Can be changed from config.env
+- This is a simple project aims to learn and practice, In real production application .env and .pem files shouldn't be added to the repo.
+- the command `node utils/generatePublicAndPrivateKeys.js` is used to generate '.pem' files in the jwt-keys folder under '/config'
